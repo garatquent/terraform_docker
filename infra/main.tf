@@ -2,24 +2,28 @@ terraform {
   required_providers {
     docker = {
       source = "kreuzwerker/docker"
-      version = "3.0.2"
+      version = ">= 2.13.0"
     }
   }
 }
 
 provider "docker" {
-    host = "localhost:8080"
-    //tcp://localhost:8080
+  //host = "npipe:////.//pipe//docker_engine"
 }
 
-ressource "docker_image" "build" {
+resource "docker_image" "build" {
     name = "my_docker_image"
     build {
-        context = "./../app"
+        context = "../app"
     }
 }
 
-ressource "docker_container" "container" {
+resource "docker_container" "container" {
     name = "my_docker_container"
     image = docker_image.build.image_id
+
+    ports {
+      internal = 8000
+      external = 8000
+    }
 }
